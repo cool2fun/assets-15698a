@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<base href="./"/>
+	<title>Drift Boss</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
+	<link rel="stylesheet" type="text/css" href="game.css"/>
+	<script>
+		window.MobileAdInGamePreroll = {Close:function(){}};
+		window.MobileAdInGameEnd = {Close:function(){}};
+		window.gdsdk = { play: function(){}, showAd: function(){ return Promise.resolve(); }, preloadAd: function(){ return Promise.resolve(true); } };
+		window.ig = { gd: { show: function(cb){ if(cb) cb(); }, close: function(){}, ready: true, freez: function(){}, unfreez: function(){} } };
+		window.gdApi = null; window.GameDistribution = null;
+	</script>
+	<script>
+		var _ce = document.createElement.bind(document);
+		document.createElement = function(t) { var e = _ce(t); if(t==='script'){ var s = e.setAttribute.bind(e); e.setAttribute = function(k,v){ if(k==='src'&&(v+'').indexOf('main.min')>=0) return; return s(k,v); }; } return e; };
+	</script>
+	<script>
+		var _IMG_PATH = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+		var _origImage = window.Image;
+		window.Image = function() {
+			var img = new _origImage();
+			var origSet = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src').set;
+			Object.defineProperty(img, 'src', {
+				get: function() { return img._src || ''; },
+				set: function(v) {
+					img._src = v;
+					try { origSet.call(img, v); } catch(e) {}
+					if (!img.crossOrigin) img.crossOrigin = 'anonymous';
+				}
+			});
+			return img;
+		};
+	</script>
+	<script src="game.js"></script>
+	<script>
+		(function _pollSDK(){ if(window.GD_OPTIONS&&window.GD_OPTIONS.onEvent){ window.GD_OPTIONS.onEvent({name:'SDK_READY'}); }else{setTimeout(_pollSDK,200);} })();
+		var _c = 0, _f = setInterval(function(){ _c++; if(!ig||!ig.game) return;
+			var g = ig.game;
+			if(g.tapToStartDiv) g.tapToStartDiv = function(cb){ cb(); };
+			g.status = 999; g._drawStatus = 999;
+			var d = g.director; if(!d) return;
+			if(_c >= 5 && d.currentLevel === 0 && d.levels.length > 1) { clearInterval(_f); d.loadLevel(1); }
+			if(_c > 100) clearInterval(_f);
+		}, 300);
+		setTimeout(function(){ var d = ig&&ig.game&&ig.game.director; if(d&&d.currentLevel===0) d.loadLevel(1); }, 8000);
+	</script>
+</head>
+<body onload="setTimeout(function(){window.scrollTo(0,1)},1);">
+	<div id="ajaxbar">
+		<div id="game"><canvas id="canvas"></canvas></div>
+		<div id="webgl"><canvas id="webglcanvas"></canvas></div>
+		<div id="orientate"><img src="media/graphics/orientate/landscape.jpg" /></div>
+		<div id="play" class="play" onclick=""><img src="media/graphics/splash/mobile/cover-start.jpg" /></div>
+	</div>
+</body>
+</html>
